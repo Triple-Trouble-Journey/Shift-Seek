@@ -31,9 +31,15 @@ def insert_query(model, db, something):
     db_car = model(**something.dict())
     db.add(db_car)
     db.commit()
+                            #user_id = 1 , 
+def read_query(model, db, param, property):
 
-def read_query(model, db, something):
+    result  = db.query(model).filter(getattr(model, property) == param).first()
 
-    db_car = db.query(model).filter(model.car_id == something).first()
+    return result
 
-    return db_car
+def read_query_result(model, db, param, property):
+
+    results = db.query(getattr(model, property)).filter(model.car_id == param).first()
+
+    return results

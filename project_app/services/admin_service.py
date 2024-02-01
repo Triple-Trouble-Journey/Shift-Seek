@@ -1,13 +1,18 @@
 from base_models.admin_model import Admin
 from config.db_engine import insert_query, read_query
+from db_models import sqlalchemy_script
 
 
-def get_admin(username) -> None | Admin:
-    admin_data = read_query('''
-    SELECT a.id, a.username, a.first_name, a.last_name, a.picture, c.email, c.address, c.telephone, c.post_code, l.city, l.country
-    FROM admin_list as a, employee_contacts as c, locations as l 
-    WHERE a.employee_contacts_id = c.id AND c.locations_id = l.id
-    AND a.username = ?
-    ''', (username,))
+def get_user_id_by_username(username: str, db):
 
-    return next((Admin.from_query_results(*row) for row in admin_data), None)
+    current_property = 'username'
+    current_user_info = read_query(sqlalchemy_script.User, db, username, current_property)
+
+    return current_user_info.user_id
+
+def get_admin_id(username, db) -> None | Admin:
+    current_id_user = get_user_id_by_username(username, db)
+    current_property = 'admin_id'
+    admin_id = read_query(sqlalchemy_script.Admin, db, current_id_user, current_property)
+
+    return admin_id

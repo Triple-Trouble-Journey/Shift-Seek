@@ -6,6 +6,8 @@ from base_models.user_model import User
 from config.db_engine import read_query, insert_query
 from services import admin_service, user_service
 from fastapi import HTTPException
+from db_models import sqlalchemy_script
+
 
 # TODO: shorten token expiration
 _SECRET_KEY = '2d776838352e75a9f95de915c269c8ce45b12de47f720213c5f71c4e25618c25'
@@ -25,44 +27,46 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def _get_pass_by_username_admin(username):
-    hashed_password = read_query('''
-    SELECT password FROM admins WHERE username = ?
-    ''', (username,))
+def _get_pass_by_username_admin(username, db):
+
+
+    current_property = 'username'
+    user_info = read_query(sqlalchemy_script.User,db,username, current_property)
+    hashed_password = user_info.password
 
     if hashed_password:
-        hashed_password = hashed_password[0][0]
         return hashed_password
     else:
         return None
 
 
-def _get_pass_by_username_seeker(username):
-    hashed_password = read_query('''
-    SELECT password FROM job_seekers WHERE username = ?
-    ''', (username,))
+def _get_pass_by_username_seeker(username, db):
+    current_property = 'username'
+    user_info = read_query(sqlalchemy_script.User,db,username, current_property)
+    hashed_password = user_info.password
 
     if hashed_password:
-        hashed_password = hashed_password[0][0]
         return hashed_password
     else:
         return None
+                        #Bobi
+def authenticate_admin(username: str, password: str, db) -> bool | Admin:
+    admin = admin_service.get_admin_id(username, db)
+    #1 id
 
-def authenticate_admin(username: str, password: str) -> bool | Admin:
-    admin = admin_service.get_admin(username)
     if not admin:
         return False
-    if not verify_password(password, _get_pass_by_username_admin(username)):
+    if not verify_password(password, _get_pass_by_username_admin(username,db)):
         return False
 
     return admin
 
 
-def authenticate_user(username: str, password: str) -> bool | User:
-    user = user_service.get_seeker(username)
+def authenticate_user(username: str, password: str, db) -> bool | User:
+    user = user_service.get_user_id(username, db)
     if not user:
         return False
-    if not verify_password(password, _get_pass_by_username_seeker(username)):
+    if not verify_password(password, _get_pass_by_username_seeker(username, db)):
         return False
 
     return user
@@ -70,8 +74,7 @@ def authenticate_user(username: str, password: str) -> bool | User:
 
 def create_access_token(user_data, expiration_delta: timedelta = _TOKEN_EXPIRATION_TIME_MINUTES):
     to_encode = {
-        "id": user_data.id,
-        "group": user_data.group,
+        "id": user_data.user_id,
         "username": user_data.username,
         "email": user_data.email
     }

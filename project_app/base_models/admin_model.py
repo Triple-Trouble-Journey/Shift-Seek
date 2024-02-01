@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 class Admin(BaseModel):
-    id: Optional[int] = None
+    admin_id: Optional[int] = None
     group: str = 'admins'
     username: str
     password: str
