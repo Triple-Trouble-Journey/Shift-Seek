@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from routers.car_router import car_router
+from routers.token_router import token_router
 
 app = FastAPI()
 app.include_router(car_router)
+app.include_router(token_router)
 
 
 if __name__ == "__main__":
