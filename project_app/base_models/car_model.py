@@ -5,3 +5,5 @@ class Car(BaseModel):
     car_id: int
     brand: str
     model: str
+
+# PISHA SI NQKVI PROBI
