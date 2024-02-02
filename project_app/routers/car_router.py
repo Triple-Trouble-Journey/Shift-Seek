@@ -31,7 +31,7 @@ async def all_cars(db: db_dependency):
 
     return car
 
-@car_router.get("/brand", status_code=status.HTTP_200_OK, tags= {'Car Section'})
+@car_router.get("brand", status_code=status.HTTP_200_OK, tags= {'Car Section'})
 
 def find_car_by_brand(brand: str, db: db_dependency):
     current_property = 'brand'
