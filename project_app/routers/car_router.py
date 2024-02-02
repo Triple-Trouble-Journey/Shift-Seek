@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from base_models.car_model import Car
 from config.auth import get_current_user
-from config.db_engine import engine, db_dependency, insert_query, read_query, read_query_result
+from config.db_engine import engine, db_dependency, insert_query, read_query
 from db_models import sqlalchemy_script
 
 car_router = APIRouter(prefix='/car')

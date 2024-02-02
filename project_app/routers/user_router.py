@@ -1,6 +1,6 @@
-from fastapi import APIRouter, status, HTTPException, Query
-from base_models.user_model import User, UserRegiser
-from config.db_engine import engine, db_dependency, insert_query, read_query, read_query_result
+from fastapi import APIRouter, status, HTTPException
+from base_models.user_model import UserRegiser
+from config.db_engine import engine, db_dependency, read_query
 from db_models import sqlalchemy_script
 from services import user_service
 
