@@ -2,19 +2,15 @@ from time import time
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import ExpiredSignatureError
-from pydantic import BaseModel
-
+from base_models.token_model import TokenData
+from db_models import sqlalchemy_script
+from config.db_engine import db_dependency, read_query
 from services.authorization_service import is_authenticated
 
 oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-#  Currently the token verifies against the database.
-#  If we want to go for statelessness the access token should not verify each time
-#  against the database. Instead, there should be a whitelist/blacklist that could
-#  be in memory. Additional functionality could be adding refresh tokens.
-
-def get_current_user(token: str = Depends(oauth_2_scheme)):
+def get_current_user(db: db_dependency, token: str = Depends(oauth_2_scheme)):
     credential_exception = HTTPException(status_code=401,
                                          detail='Could not validate credentials',
                                          headers={'WWW-AUTHENTICATE': 'Bearer'})
@@ -25,22 +21,14 @@ def get_current_user(token: str = Depends(oauth_2_scheme)):
         if username is None:
             raise credential_exception
 
-        if payload['exp'] > time():
-            if payload['group'] == 'admins':
-                return payload
-            elif payload['group'] == 'users':
-                if payload['blocked']:
-                    raise HTTPException(status_code=403,
-                                        detail='User has been blocked.')
-                return payload
-        else:
-            raise ExpiredSignatureError
+        token_data = TokenData(username=username)
     except ExpiredSignatureError:
         raise HTTPException(status_code=401,
                             detail='Expired token.')
+    current_property = 'username'
+    user_info = read_query(sqlalchemy_script.User,db,token_data.username, current_property)
 
-class TokenInfo(BaseModel):
-    id: int
-    group: str
-    username: str
-    email: str
+    if user_info is None:
+        raise credential_exception
+    
+    return user_info
