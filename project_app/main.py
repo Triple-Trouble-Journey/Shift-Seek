@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from routers.car_router import car_router
 from routers.token_router import token_router
 from routers.user_router import user_router
+from routers.car_ads_router import car_ads_router
 
 app = FastAPI()
 app.include_router(car_router)
 app.include_router(token_router)
 app.include_router(user_router)
-
+app.include_router(car_ads_router)
 
 if __name__ == "__main__":
     import uvicorn

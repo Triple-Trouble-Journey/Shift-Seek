@@ -4,10 +4,23 @@ from config.db_engine import engine, db_dependency, read_query
 from db_models import sqlalchemy_script
 from services import user_service
 from config.auth import get_current_user
+from common.user_information import user_result
 
-user_router = APIRouter(prefix='/user')
+user_router = APIRouter(prefix='/users')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
+@user_router.get('/information', status_code=status.HTTP_200_OK, tags= {'User Section'})
+
+async def personal_information(db: db_dependency, current_user_payload= Depends(get_current_user)):
+
+    username_info = current_user_payload.username
+    
+    current_property = 'username'
+    user_information = read_query(sqlalchemy_script.User, db, username_info, current_property)
+    if user_information is None:
+        raise HTTPException(status_code=404, detail='Not found!')
+    
+    return user_result(user_information)
 
 @user_router.get('/name', status_code=status.HTTP_200_OK, tags= {'User Section'})
 
@@ -17,7 +30,8 @@ def find_user_by_name(username: str, db: db_dependency, current_user_payload= De
     user = read_query(sqlalchemy_script.User, db, username, current_property)
     if user is None:
         raise HTTPException(status_code=404, detail='Not found!')
-    return user
+    
+    return user_result(user)
 
 @user_router.post('/', status_code=status.HTTP_201_CREATED, tags= {'Registration'})
 
@@ -40,14 +54,12 @@ async def user_by_id(user_id: int, db: db_dependency, current_user_payload= Depe
     user = read_query(sqlalchemy_script.User, db, user_id, current_property)
     if user is None:
         raise HTTPException(status_code=404, detail='Not found!')
-    return user
-
-
-@user_router.get('/information', status_code=status.HTTP_200_OK, tags= {'User Section'})
-
-async def personal_information(db: db_dependency):
-
-
-    user_info = db.query(sqlalchemy_script.User).all()
-
-    return user_info
+    return {
+        "Id": user.user_id,
+        "Username": user.username,
+        "Email": user.email,
+        "First Name": user.first_name,
+        "Last Name": user.last_name,
+        "Address": user.address,
+        "Telephone": user.telephone,
+    }
