@@ -12,7 +12,7 @@ sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
 @car_router.post('/add', status_code=status.HTTP_201_CREATED, tags= {'Car Section'})
 
-async def add_car(car: Car, db: db_dependency):
+async def add_car(car: Car, db: db_dependency, current_user_payload=Depends(get_current_user)):
     insert_query(sqlalchemy_script.Car, db, car)
 
 @car_router.get('/{car_id}', status_code=status.HTTP_200_OK, tags= {'Car Section'})
@@ -25,15 +25,14 @@ async def car_by_id(car_id: int, db: db_dependency, current_user_payload=Depends
     return car
 
 @car_router.get("/", status_code=status.HTTP_200_OK, tags= {'Car Section'})
-async def all_cars(db: db_dependency):
 
+async def all_cars(db: db_dependency, current_user_payload=Depends(get_current_user)):
     car = db.query(sqlalchemy_script.Car).all()
-
     return car
 
 @car_router.get("brand", status_code=status.HTTP_200_OK, tags= {'Car Section'})
 
-def find_car_by_brand(brand: str, db: db_dependency):
+def find_car_by_brand(brand: str, db: db_dependency, current_user_payload=Depends(get_current_user)):
     current_property = 'brand'
     car = read_query(sqlalchemy_script.Car, db, brand, current_property)
     if car is None:

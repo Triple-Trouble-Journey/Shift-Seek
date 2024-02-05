@@ -1,8 +1,9 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 from base_models.user_model import UserRegiser
 from config.db_engine import engine, db_dependency, read_query
 from db_models import sqlalchemy_script
 from services import user_service
+from config.auth import get_current_user
 
 user_router = APIRouter(prefix='/user')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
@@ -10,7 +11,7 @@ sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
 @user_router.get('/name', status_code=status.HTTP_200_OK, tags= {'User Section'})
 
-def find_user_by_name(username: str, db: db_dependency):
+def find_user_by_name(username: str, db: db_dependency, current_user_payload= Depends(get_current_user)):
 
     current_property = 'username'
     user = read_query(sqlalchemy_script.User, db, username, current_property)
@@ -18,7 +19,7 @@ def find_user_by_name(username: str, db: db_dependency):
         raise HTTPException(status_code=404, detail='Not found!')
     return user
 
-@user_router.post('/', status_code=status.HTTP_201_CREATED, tags= {'User Section'})
+@user_router.post('/', status_code=status.HTTP_201_CREATED, tags= {'Registration'})
 
 def registration(user: UserRegiser, db: db_dependency):
     
@@ -28,15 +29,25 @@ def registration(user: UserRegiser, db: db_dependency):
 
 @user_router.get("/",status_code=status.HTTP_200_OK, tags= {'Admin Section'})
 
-async def get_all_users(db: db_dependency):
+async def get_all_users(db: db_dependency, current_user_payload= Depends(get_current_user)):
     users = db.query(sqlalchemy_script.User).all()
     return users
 
 @user_router.get('/{user_id}', status_code=status.HTTP_200_OK, tags= {'User Section'})
 
-async def user_by_id(user_id: int, db: db_dependency):
+async def user_by_id(user_id: int, db: db_dependency, current_user_payload= Depends(get_current_user)):
     current_property = 'user_id'
     user = read_query(sqlalchemy_script.User, db, user_id, current_property)
     if user is None:
         raise HTTPException(status_code=404, detail='Not found!')
     return user
+
+
+@user_router.get('/information', status_code=status.HTTP_200_OK, tags= {'User Section'})
+
+async def personal_information(db: db_dependency):
+
+
+    user_info = db.query(sqlalchemy_script.User).all()
+
+    return user_info
