@@ -1,12 +1,20 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 from base_models.user_model import UserRegiser
 from config.db_engine import engine, db_dependency, read_query
 from db_models import sqlalchemy_script
+from services import user_service
+from config.auth import get_current_user
 from services import user_service
 
 user_router = APIRouter(prefix='/user')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
+
+@user_router.patch('/add/admin', status_code=status.HTTP_200_OK, tags={'Admin Section'})
+def make_admin(email: str, db: db_dependency, 
+               current_user_payload = Depends(get_current_user)):
+
+    return user_service.add_admin(current_user_payload, email, db)
 
 @user_router.get('/name', status_code=status.HTTP_200_OK, tags= {'User Section'})
 

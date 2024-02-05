@@ -26,12 +26,26 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-def insert_query(model, db, something):
+def insert_query(model, db, object):
 
-    db_car = model(**something.dict())
+    db_car = model(**object.dict())
     db.add(db_car)
     db.commit()
+
+#ONLY ONE RESULT car: {audi a5}
 def read_query(model, db, param, property):
 
     result  = db.query(model).filter(getattr(model, property) == param).first()
-    return result
+    if result:
+        return result
+    else:
+        return None
+
+#ALL RESULTS FOR THE PARAM example: cars: {audi a5, audi a6, audi a8}
+def read_query_all_results(model, db, param, property):
+
+    result  = db.query(model).filter(getattr(model, property) == param).all()
+    if result:
+        return result
+    else:
+        return None
