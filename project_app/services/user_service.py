@@ -1,5 +1,5 @@
 from base_models.user_model import User
-from config.db_engine import read_query, insert_query
+from config.db_engine import read_query, insert_query, delete_query
 from db_models import sqlalchemy_script
 
 

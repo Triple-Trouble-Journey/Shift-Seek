@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException, Depends
-from base_models.user_model import UserRegiser
-from config.db_engine import engine, db_dependency, read_query
+from base_models.user_model import UserRegiser, User
+from config.db_engine import engine, db_dependency, read_query, delete_query
 from db_models import sqlalchemy_script
 from services import user_service
 from config.auth import get_current_user
@@ -8,6 +8,38 @@ from common.user_information import user_result
 
 user_router = APIRouter(prefix='/users')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
+
+#TODO:
+@user_router.put('/', status_code=status.HTTP_200_OK, tags= {'User Section'})
+
+async def edit_your_profile_information(first_name: str,  
+                                         db: db_dependency, current_user_payload= Depends(get_current_user)):
+
+    # Needs additional fixing
+    # To be continue
+
+
+    
+    db_record = db.query(sqlalchemy_script.User.first_name).filter(sqlalchemy_script.User.first_name == first_name).first()
+
+    if db_record:
+        db.delete(db_record)
+        db.add(db_record)
+        db.commit()
+        return ("Edited successfully")
+
+
+@user_router.delete('/', status_code=status.HTTP_200_OK, tags= {'Admin Section'})
+
+async def ban_a_specific_user(user_id: int, db: db_dependency, current_user_payload= Depends(get_current_user)):
+
+    db_record = db.query(sqlalchemy_script.User).filter(sqlalchemy_script.User.user_id == user_id).first()
+    if db_record:
+        db.delete(db_record)
+        db.commit()
+        return {f"User with ID: {user_id} was deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail= 'This user was not found')
 
 @user_router.get('/information', status_code=status.HTTP_200_OK, tags= {'User Section'})
 
