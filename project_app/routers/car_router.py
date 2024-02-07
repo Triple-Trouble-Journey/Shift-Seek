@@ -4,6 +4,7 @@ from config.auth import get_current_user
 from config.db_engine import engine, db_dependency, insert_query, read_query, read_query_all_results
 from db_models import sqlalchemy_script
 
+
 car_router = APIRouter(prefix='/car')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
@@ -20,7 +21,7 @@ def find_car_by_brand(brand: str, db: db_dependency,
 
 @car_router.post('/add', status_code=status.HTTP_201_CREATED, tags= {'Car Section'})
 
-async def add_car(car: Car, db: db_dependency):
+async def add_car(car: Car, db: db_dependency, current_user_payload=Depends(get_current_user)):
     insert_query(sqlalchemy_script.Car, db, car)
 
 @car_router.get('/{car_id}', status_code=status.HTTP_200_OK, tags= {'Car Section'})
@@ -35,9 +36,8 @@ async def car_by_id(car_id: int, db: db_dependency,
     return car
 
 @car_router.get("/", status_code=status.HTTP_200_OK, tags= {'Car Section'})
-async def all_cars(db: db_dependency):
 
+async def all_cars(db: db_dependency, current_user_payload=Depends(get_current_user)):
     car = db.query(sqlalchemy_script.Car).all()
-
     return car
 
