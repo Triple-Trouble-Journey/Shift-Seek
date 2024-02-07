@@ -36,6 +36,8 @@ def create_user(user_info, db):
     user_info.password = hashed_pass
     insert_query(sqlalchemy_script.User, db, user_info)
 
+    raise HTTPException(status_code=201, detail='Successfull registration!')
+
 def add_admin(logged_user, email: str, db):
 
     is_admin = read_query(sqlalchemy_script.Admin, db, logged_user.user_id, 'users_id')
