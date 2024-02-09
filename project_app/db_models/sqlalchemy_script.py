@@ -109,3 +109,16 @@ class Message(Base):
     message_text = Column(Text, nullable=False)
 
     author = relationship('User')
+
+
+#READY TO USE WITH IMPORTS
+db_ads = CarAd
+db_users = User
+db_cars = Car
+db_locations = Location
+db_messages = Message
+db_replies = Reply
+db_conversations = Conversation
+db_topics = Topic
+db_archived_ads = ArchivedAd
+db_admins = Admin

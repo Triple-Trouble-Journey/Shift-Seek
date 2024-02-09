@@ -5,7 +5,7 @@ from base_models.user_model import User
 from config.db_engine import read_query
 from services import user_service
 from fastapi import HTTPException
-from db_models import sqlalchemy_script
+from db_models.sqlalchemy_script import db_users
 
 
 _SECRET_KEY = '2d776838352e75a9f95de915c269c8ce45b12de47f720213c5f71c4e25618c25'
@@ -26,7 +26,7 @@ def get_password_hash(password):
 
 def _get_pass_by_username(username, db):
     current_property = 'username'
-    user_info = read_query(sqlalchemy_script.User,db,username, current_property)
+    user_info = read_query(db_users,db,username, current_property)
     hashed_password = user_info.password
 
     if hashed_password:
