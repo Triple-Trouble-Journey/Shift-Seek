@@ -8,6 +8,18 @@ from services import car_ads_service
 car_ads_router = APIRouter(prefix='/car_ads')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
+@car_ads_router.get('/personal', status_code= status.HTTP_200_OK, tags={'Car Ads Section'})
+
+async def personal_ads(db: db_dependency, current_user_payload = Depends(get_current_user)):
+
+    return car_ads_service.view_my_ads(db, current_user_payload)
+
+@car_ads_router.delete('/remove/{ad_id}', status_code = status.HTTP_200_OK, tags = {'Car Ads Section'})
+
+async def remove_ad(ad_id: int ,db: db_dependency, current_user_payload = Depends(get_current_user)):
+
+    return car_ads_service.delete_ad(db, current_user_payload, ad_id)
+
 @car_ads_router.get('/all', status_code = status.HTTP_200_OK, tags = {'Car Ads Section'})
 
 async def all_ads(db: db_dependency):
@@ -24,6 +36,8 @@ async def create_new_ad(car_ad: InputCarAD, db: db_dependency,
 
 @car_ads_router.put('/edit', status_code=status.HTTP_200_OK, tags= {'Car Ads Section'})
 
+
+#TODO: TO FINISH THE EDIT FOR LOCATION AND CAR MODEL WHEN ARE READY AND EVERYTHING IS CLEAR.
 async def edit_ad(db: db_dependency,
                ad_id: int, 
                car_price: int = Query(None), 

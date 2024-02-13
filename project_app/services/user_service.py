@@ -3,6 +3,7 @@ from base_models.admin_model import Admin
 from fastapi import HTTPException
 from config.db_engine import read_query, insert_query, read_query_all_results
 from db_models import sqlalchemy_script
+from mailing.register_email import register_email_send
 
 
 def get_user_id_by_username(username: str, db):
@@ -36,6 +37,7 @@ def create_user(user_info, db):
     user_info.password = hashed_pass
     insert_query(sqlalchemy_script.User, db, user_info)
 
+    register_email_send(user_info)
     raise HTTPException(status_code=201, detail='Successfull registration!')
 
 def add_admin(logged_user, email: str, db):
