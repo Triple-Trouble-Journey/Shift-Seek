@@ -12,21 +12,13 @@ sqlalchemy_script.Base.metadata.create_all(bind=engine)
 #TODO:
 @user_router.put('/', status_code=status.HTTP_200_OK, tags= {'User Section'})
 
-async def edit_your_profile_information(first_name: str,  
+async def edit_your_profile_information(first_name: str,  last_name: str, address: str, telephone: int, 
                                          db: db_dependency, current_user_payload= Depends(get_current_user)):
 
-    # Needs additional fixing
-    # To be continue
+    user_info = current_user_payload.user_id
 
-
-    
-    db_record = db.query(sqlalchemy_script.User.first_name).filter(sqlalchemy_script.User.first_name == first_name).first()
-
-    if db_record:
-        db.delete(db_record)
-        db.add(db_record)
-        db.commit()
-        return ("Edited successfully")
+    return user_service.edit_user_info(user_info, first_name,  last_name, 
+                                       address, telephone, db)
 
 
 @user_router.delete('/', status_code=status.HTTP_200_OK, tags= {'Admin Section'})

@@ -109,3 +109,5 @@ class Message(Base):
     message_text = Column(Text, nullable=False)
 
     author = relationship('User')
+
+db_user_info = User
