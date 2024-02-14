@@ -110,4 +110,33 @@ class Message(Base):
 
     author = relationship('User')
 
+# Testing script
+    
+    # class User(Base):
+    # __tablename__ = 'users'
+
+    # user_id = Column(Integer, primary_key=True, autoincrement=True)
+    # username = Column(String(50), unique=True, nullable=False)
+    # password = Column(String(100), nullable=False)
+    # email = Column(String(100), unique=True, nullable=False)
+    # first_name = Column(String(50), nullable=False)
+    # last_name = Column(String(50), nullable=False)
+    # address = Column(String(50), nullable=False)
+    # telephone = Column(String(50), nullable=False)
+    # profile_picture = Column(LargeBinary, nullable=True)
+    # is_company = Column(Boolean, nullable=False)class User(Base):
+    # __tablename__ = 'users'
+
+    # user_id = Column(Integer, primary_key=True, autoincrement=True)
+    # username = Column(String(50), unique=True, nullable=False)
+    # password = Column(String(100), nullable=False)
+    # email = Column(String(100), unique=True, nullable=False)
+    # first_name = Column(String(50), nullable=False)
+    # last_name = Column(String(50), nullable=False)
+    # address = Column(String(50), nullable=False)
+    # telephone = Column(String(50), nullable=False)
+    # profile_picture = Column(LargeBinary, nullable=True)
+    # is_company = Column(Boolean, nullable=False)
+
+    
 db_user_info = User
