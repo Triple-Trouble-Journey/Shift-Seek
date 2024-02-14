@@ -10,7 +10,7 @@ token_router = APIRouter(prefix='/token')
 sqlalchemy_script.Base.metadata.create_all(bind=engine)
 
 
-@token_router.post('/', response_model=Token, tags=['token'])
+@token_router.post('/', response_model=Token, tags=['token'], include_in_schema=False)
 async def login_for_access_token(db: db_dependency,form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password, db)
 

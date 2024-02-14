@@ -1,7 +1,7 @@
 from mailing.engine import mailjet
 from db_details import mailjet_sender_email as sender
 
-#TODO: TO BE CONTINUED!
+#TODO: TO FINISH THE HTML
 def register_email_send(user):
 
     register_email = {
@@ -26,6 +26,4 @@ def register_email_send(user):
     }
 
     result = mailjet.send.create(data=register_email)
-    print(result.status_code)
-    print(result.json())
     return result

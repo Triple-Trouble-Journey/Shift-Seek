@@ -1,8 +1,9 @@
-from base_models.user_model import User
+from base_models.user_model import User, object_generator_user
 from base_models.admin_model import Admin
 from fastapi import HTTPException
 from config.db_engine import read_query, insert_query, read_query_all_results
 from db_models import sqlalchemy_script
+from sqlalchemy.exc import IntegrityError
 from mailing.register_email import register_email_send
 
 
@@ -35,10 +36,14 @@ def create_user(user_info, db):
 
     hashed_pass = get_password_hash(user_info.password)
     user_info.password = hashed_pass
-    insert_query(sqlalchemy_script.User, db, user_info)
-
-    register_email_send(user_info)
-    raise HTTPException(status_code=201, detail='Successfull registration!')
+    db_info = object_generator_user(user_info)
+    try:
+        insert_query(sqlalchemy_script.User, db, db_info)
+        register_email_send(user_info)
+        raise HTTPException(status_code=201, detail='Successfull registration!')
+    
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail='Email already exist!')
 
 def add_admin(logged_user, email: str, db):
 
